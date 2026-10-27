@@ -1,22 +1,32 @@
+
 while True:
     print("\n===========================")
-    print("    SISTEMA DE CADASTRO")
+    print("     SISTEMA DE CADASTRO")
     print("===========================")
     print("1 - Cadastrar")
     print("2 - Fazer login")
     print("3 - Pesquisar usuario")
-    print("4 - Listar usuarios")
+    print("4 - Mostrar dados cadastrados")
     print("5 - Sair")
 
-    opcao = input("Escolha uma opcao: ")
+    opcao = input("Escolha uma opcao (1 a 5): ").strip()
 
-    # Ccadastro
+    # VALIDAR OPCAO
+    if opcao not in ["1", "2", "3", "4", "5"]:
+        print("Opcao invalida! Digite somente um numero de 1 a 5.")
+        continue
+
+    # CADASTRAR ALUNO
     if opcao == "1":
         print("\n==== TELA DE CADASTRO ====")
 
         nome = input("Digite seu nome: ").strip()
 
-        arquivo = open("usuarios.txt", "a+")
+        if nome == "":
+            print("Nome invalido!")
+            continue
+
+        arquivo = open("usuarios.txt", "a+", encoding="utf-8")
         arquivo.seek(0)
         usuarios = arquivo.readlines()
         arquivo.close()
@@ -25,31 +35,34 @@ while True:
 
         for usuario in usuarios:
             dados = usuario.strip().split(";")
-            if dados[0] == nome:
+
+            if len(dados) == 3 and dados[0].lower() == nome.lower():
                 existe = True
+                break
 
         if existe:
             print("Esse usuario ja existe!")
         else:
-            senha = input("Crie sua senha: ")
+            senha = input("Crie sua senha: ").strip()
+            curso = input("Digite o curso do aluno: ").strip()
 
-            arquivo = open("usuarios.txt", "a")
-            arquivo.write(nome + ";" + senha + "\n")
-            arquivo.close()
-        else:
-            curso = input("Informe seu curso")
-            arquivo
+            if senha == "" or curso == "":
+                print("Senha e curso nao podem ficar vazios!")
+            else:
+                arquivo = open("usuarios.txt", "a", encoding="utf-8")
+                arquivo.write(nome + ";" + senha + ";" + curso + "\n")
+                arquivo.close()
 
-            print("Cadastro realizado com sucesso!")
+                print("Cadastro realizado com sucesso!")
 
     # FAZER LOGIN
     elif opcao == "2":
         print("\n====== TELA DE LOGIN ======")
 
         nome = input("Digite seu nome: ").strip()
-        senha = input("Digite sua senha: ")
+        senha = input("Digite sua senha: ").strip()
 
-        arquivo = open("usuarios.txt", "a+")
+        arquivo = open("usuarios.txt", "a+", encoding="utf-8")
         arquivo.seek(0)
         usuarios = arquivo.readlines()
         arquivo.close()
@@ -59,9 +72,10 @@ while True:
         for usuario in usuarios:
             dados = usuario.strip().split(";")
 
-            if len(dados) == 2:
-                if dados[0] == nome and dados[1] == senha:
+            if len(dados) == 3:
+                if dados[0].lower() == nome.lower() and dados[1] == senha:
                     logado = True
+                    break
 
         if logado:
             print("Login realizado com sucesso!")
@@ -75,7 +89,7 @@ while True:
 
         pesquisa = input("Digite o nome para pesquisar: ").strip()
 
-        arquivo = open("usuarios.txt", "a+")
+        arquivo = open("usuarios.txt", "a+", encoding="utf-8")
         arquivo.seek(0)
         usuarios = arquivo.readlines()
         arquivo.close()
@@ -85,31 +99,37 @@ while True:
         for usuario in usuarios:
             dados = usuario.strip().split(";")
 
-            if len(dados) == 2:
+            if len(dados) == 3:
                 if pesquisa.lower() in dados[0].lower():
                     print("Usuario encontrado:", dados[0])
+                    print("Curso:", dados[2])
                     encontrado = True
 
         if not encontrado:
             print("Usuario nao encontrado!")
 
-    # LISTAR USUARIOS
+    # MOSTRAR DADOS CADASTRADOS
     elif opcao == "4":
-        print("\n==== USUARIOS CADASTRADOS ====")
+        print("\n==== DADOS CADASTRADOS ====")
 
-        arquivo = open("usuarios.txt", "a+")
+        arquivo = open("usuarios.txt", "a+", encoding="utf-8")
         arquivo.seek(0)
         usuarios = arquivo.readlines()
         arquivo.close()
 
-        if len(usuarios) == 0:
-            print("Nenhum usuario cadastrado.")
-        else:
-            for usuario in usuarios:
-                dados = usuario.strip().split(";")
+        encontrou = False
 
-                if len(dados) == 2:
-                    print("-", dados[0])
+        for usuario in usuarios:
+            dados = usuario.strip().split(";")
+
+            if len(dados) == 3:
+                print("---------------------------")
+                print("Nome:", dados[0])
+                print("Curso:", dados[2])
+                encontrou = True
+
+        if not encontrou:
+            print("Nenhum aluno cadastrado.")
 
     # SAIR
     elif opcao == "5":
